@@ -32,7 +32,7 @@ if errorlevel 1 (
 cd ..
 
 echo Deploying to Azure...
-az webapp deploy --src-path deploy.zip --resource-group rg-WebApp --name ahlazko-webapp --type zip
+az webapp deploy --src-path deploy.zip --resource-group rg-WebApp --name ahlazko-webapp --slot staging --type zip
 
 if errorlevel 1 (
     echo Azure deployment failed.
