@@ -8,7 +8,8 @@ public class HomeController : Controller
 {
     public IActionResult Index()
     {
-        return View();
+        var env = Environment.GetEnvironmentVariable("Environment") ?? "undefined";
+        return View("Index", env);
     }
 
     public IActionResult Privacy()

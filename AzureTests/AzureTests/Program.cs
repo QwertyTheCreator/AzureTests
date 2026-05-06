@@ -5,6 +5,7 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+var env = Environment.GetEnvironmentVariable("Environment") ?? "undefined";
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

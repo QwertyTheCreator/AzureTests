@@ -57,3 +57,5 @@ TestResult.xml
 nunit-*.xml
 
 AzureTests/pub
+AzureTests/publish
+AzureTests/deploy.zip
