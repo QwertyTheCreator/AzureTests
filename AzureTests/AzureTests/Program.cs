@@ -2,6 +2,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Logging.AddAzureWebAppDiagnostics();
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
@@ -16,7 +18,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.Logger.LogInformation("Application started");
 app.UseAuthorization();
 
 app.MapStaticAssets();

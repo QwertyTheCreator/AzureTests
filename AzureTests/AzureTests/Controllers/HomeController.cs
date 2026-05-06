@@ -4,10 +4,12 @@ using AzureTests.Models;
 
 namespace AzureTests.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ILogger<HomeController> logger) : Controller
 {
     public IActionResult Index()
     {
+        logger.LogInformation("User just reached HomePage");
+        
         var env = Environment.GetEnvironmentVariable("Environment") ?? "undefined";
         return View("Index", env);
     }
