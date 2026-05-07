@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Azure.Identity" Version="1.21.0" />
+      <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="10.0.7" />
     </ItemGroup>
 

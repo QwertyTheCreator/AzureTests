@@ -6,12 +6,20 @@ namespace AzureTests.Controllers;
 
 public class HomeController(ILogger<HomeController> logger) : Controller
 {
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         logger.LogInformation("User just reached HomePage");
+
+        var blobServiceClient = StorageHelper.GetClient();
+
+        var containers = await blobServiceClient.GetBlobContainersAsync().ToListAsync();
+        var containerNames = string.Join(",\n", containers.Select(c => c.Name));
         
         var env = Environment.GetEnvironmentVariable("Environment") ?? "undefined";
-        return View("Index", env);
+
+        var textToRepresent = $"Environment {env}" + "\n" +
+                              $" ContainerNames: {containerNames}";
+        return View("Index", textToRepresent);
     }
 
     public IActionResult Privacy()
