@@ -1,10 +1,17 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using AzureTests;
+using AzureTests.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<AzureAuthProvider>();
+builder.Services.AddSingleton<StorageService>();
+builder.Services.AddSingleton<ServiceBusService>();
+
 builder.Logging.AddAzureWebAppDiagnostics();
 builder.Logging.AddConsole();
 

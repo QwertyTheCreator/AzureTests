@@ -1,0 +1,11 @@
+@model List<string>
+@{
+    Layout = "_Layout";
+}
+<div class="text-center">
+    <h1 class="display-4">Recent IPs</h1>
+    @foreach (var ip in @Model)
+    {
+        <p>Ip adress: @ip</p>
+    }
+</div>

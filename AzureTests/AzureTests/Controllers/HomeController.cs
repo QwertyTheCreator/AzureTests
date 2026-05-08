@@ -1,20 +1,26 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using AzureTests.Models;
+using AzureTests.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AzureTests.Controllers;
 
-public class HomeController(ILogger<HomeController> logger) : Controller
+public class HomeController(
+    ILogger<HomeController> logger,
+    ServiceBusService busService,
+    StorageService storageService) : Controller
 {
     public async Task<IActionResult> Index()
     {
-        logger.LogInformation("User just reached HomePage");
+        var ip = await SendMessageWithClientIp();
+        
+        logger.LogInformation("User {ip} reached HomePage", ip);
 
-        var blobServiceClient = StorageHelper.GetClient();
+        var blobServiceClient = storageService.GetClient();
 
         var containers = await blobServiceClient.GetBlobContainersAsync().ToListAsync();
         var containerNames = string.Join(",\n", containers.Select(c => c.Name));
-        
+
         var env = Environment.GetEnvironmentVariable("Environment") ?? "undefined";
 
         var container = containers.ElementAt(Random.Shared.Next(0, containers.Count()));
@@ -22,10 +28,25 @@ public class HomeController(ILogger<HomeController> logger) : Controller
 
         var props = container.Properties;
         var textToRepresent = $"Environment {env}" + "\n" +
-                              $" ContainerNames: {containerNames}\n" + 
+                              $" ContainerNames: {containerNames}\n" +
                               $" Properties for {container.Name}, {containerClient.Uri}: PublicAccess - {props.PublicAccess},\n" +
                               $"Last Modified - {props.LastModified}";
         return View("Index", textToRepresent);
+    }
+
+    public async Task<IActionResult> RecentIps()
+    {
+        var unreadMessages = await busService.ReceiveUnreadMessages(Constants.ServiceBusQueues.TestQueue);
+        
+        return View("RecentIps", unreadMessages);
+    }
+    
+    private async Task<string> SendMessageWithClientIp()
+    {
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "<undefined>";
+        await busService.SendMessage(ip, Constants.ServiceBusQueues.TestQueue);
+
+        return ip;
     }
 
     public IActionResult Privacy()
