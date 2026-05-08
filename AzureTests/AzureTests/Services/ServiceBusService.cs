@@ -38,8 +38,9 @@ public class ServiceBusService(AzureAuthProvider azureAuthProvider, ILogger<Serv
         
         var receiver = CreateBusClient().CreateReceiver(queueName, receiverOption);
 
-        var messageStrings = (await receiver.ReceiveMessagesAsync(5)).Select(message => message.Body.ToString()).ToList();
+        var messageStrings = (await receiver.ReceiveMessagesAsync(5, TimeSpan.FromSeconds(5)))
+            .Select(message => message.Body.ToString()).ToList();
 
-        return messageStrings;
+        return messageStrings.Any() ? messageStrings : ["No new IP adresses in ServiceBus"];
     }
 }
