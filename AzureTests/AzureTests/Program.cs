@@ -27,6 +27,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 //await SetUpStorage(env);
+await SetupStorageQueue(app.Services);
 
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -42,6 +43,14 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+static async Task SetupStorageQueue(IServiceProvider provider)
+{
+    var storageService = provider.GetService<StorageService>();
+    var queueClient = await storageService.CreateQueueIfNotExists();
+    
+    await storageService.SendMessageToQueue(queueClient, "App is initialized");
+}
 
 static async Task SetUpStorage(string env = "undefined")
 {

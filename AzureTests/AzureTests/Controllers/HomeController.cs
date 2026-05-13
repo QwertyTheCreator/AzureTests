@@ -12,6 +12,8 @@ public class HomeController(
 {
     public async Task<IActionResult> Index()
     {
+        await SendLogToStorageQueue("User entered Index page");
+        
         var ip = await SendMessageWithClientIp();
         
         logger.LogInformation("User {ip} reached HomePage", ip);
@@ -36,9 +38,20 @@ public class HomeController(
 
     public async Task<IActionResult> RecentIps()
     {
+        await SendLogToStorageQueue("User entered RecentIps page");
+        
         var unreadMessages = await busService.ReceiveUnreadMessages(Constants.ServiceBusQueues.TestQueue);
         
         return View("RecentIps", unreadMessages);
+    }
+    
+    public async Task<IActionResult> RecentLogs()
+    {
+        await SendLogToStorageQueue("User entered RecentLogs page");
+
+        var unreadMessages = await ReceiveMessagesFromStorageQueue(10);
+        
+        return View("RecentLogs", unreadMessages.ToList());
     }
     
     private async Task<string> SendMessageWithClientIp()
@@ -49,8 +62,22 @@ public class HomeController(
         return ip;
     }
 
-    public IActionResult Privacy()
+    private async Task SendLogToStorageQueue(string message)
     {
+        var client = await storageService.CreateQueueIfNotExists();
+        await client.SendMessageAsync(message);
+    }
+
+    private async Task<IEnumerable<string>> ReceiveMessagesFromStorageQueue(int count)
+    {
+        var client = await storageService.CreateQueueIfNotExists();
+        return await storageService.ReceiveUnreadMessages(client, count);
+    }
+    
+    public async Task<IActionResult> Privacy()
+    {
+        await SendLogToStorageQueue("User entered Privacy page");
+        
         return View();
     }
 

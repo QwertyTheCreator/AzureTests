@@ -1,0 +1,11 @@
+@model List<string>
+    @{
+    Layout = "_Layout";
+}
+<div class="text-center">
+    <h1 class="display-4">Recent Logs</h1>
+    @foreach (var log in @Model)
+    {
+        <p>@log</p>
+    }
+</div>
